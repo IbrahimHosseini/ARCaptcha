@@ -1,0 +1,11 @@
+.DS_Store
+/.build
+/.swiftpm
+/Packages
+xcuserdata/
+DerivedData/
+*.xcuserstate
+.netrc
+/.claude/
+*.private.md
+__pycache__/
