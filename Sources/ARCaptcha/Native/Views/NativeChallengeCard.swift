@@ -25,14 +25,12 @@ struct NativeChallengeCard: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: appearance.cornerRadius, style: .continuous)
-                .fill(Color(uiColor: appearance.backgroundColor))
+                .fill(Color(appearance.backgroundColor))
         )
         .environment(\.layoutDirection, model.configuration.language.isRightToLeft ? .rightToLeft : .leftToRight)
-        .tint(Color(uiColor: appearance.accentColor))
-        .alert(strings.help, isPresented: $showsHelp) {
-            Button(strings.ok, role: .cancel) {}
-        } message: {
-            Text(helpText)
+        .accent(Color(appearance.accentColor))
+        .alert(isPresented: $showsHelp) {
+            Alert(title: Text(strings.help), message: Text(helpText), dismissButton: .cancel(Text(strings.ok)))
         }
         .animation(.easeInOut(duration: 0.2), value: model.phase)
     }
@@ -54,7 +52,7 @@ struct NativeChallengeCard: View {
             }
         }
         .font(appearance.font(.headline, size: 17, weight: .semibold))
-        .foregroundColor(Color(uiColor: appearance.primaryTextColor))
+        .foregroundColor(Color(appearance.primaryTextColor))
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
         .accessibilityAddTraits(.isHeader)
@@ -64,7 +62,7 @@ struct NativeChallengeCard: View {
         let parts = strings.imageSelectionInstruction.components(separatedBy: "%@")
         guard parts.count == 2 else { return Text(strings.imageSelectionInstruction) }
         return Text(parts[0])
-            + Text(category).foregroundColor(Color(uiColor: appearance.accentColor)).bold()
+            + Text(category).foregroundColor(Color(appearance.accentColor)).bold()
             + Text(parts[1])
     }
 
@@ -82,12 +80,8 @@ struct NativeChallengeCard: View {
             if let challenge = model.challenge {
                 challengeView(challenge)
                     .disabled(!model.isInteractive)
-                    .overlay {
-                        if model.phase == .submitting || model.phase == .loading {
-                            ProgressView().accessibilityLabel(strings.loading)
-                        }
-                    }
-                    .overlay(alignment: .bottom) { feedback }
+                    .overlay(busyIndicator)
+                    .overlay(feedback, alignment: .bottom)
             }
         }
     }
@@ -105,6 +99,13 @@ struct NativeChallengeCard: View {
     }
 
     @ViewBuilder
+    private var busyIndicator: some View {
+        if model.phase == .submitting || model.phase == .loading {
+            ProgressView().accessibilityLabel(strings.loading)
+        }
+    }
+
+    @ViewBuilder
     private var feedback: some View {
         if model.phase == .solved || model.phase == .rejected {
             let solved = model.phase == .solved
@@ -116,7 +117,7 @@ struct NativeChallengeCard: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color(uiColor: solved ? appearance.successColor : appearance.errorColor))
+                        .fill(Color(solved ? appearance.successColor : appearance.errorColor))
                 )
                 .transition(.move(edge: .bottom).combined(with: .opacity))
                 .accessibilityAddTraits(.updatesFrequently)
@@ -130,11 +131,11 @@ struct NativeChallengeCard: View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.title2)
-                .foregroundColor(Color(uiColor: appearance.errorColor))
+                .foregroundColor(Color(appearance.errorColor))
                 .accessibilityHidden(true)
             Text(strings.loadFailed)
                 .font(appearance.font(.body, size: 16))
-                .foregroundColor(Color(uiColor: appearance.primaryTextColor))
+                .foregroundColor(Color(appearance.primaryTextColor))
                 .multilineTextAlignment(.center)
             Button(strings.retry) { model.load() }
                 .buttonStyle(PrimaryButtonStyle(appearance: appearance))
@@ -148,10 +149,10 @@ struct NativeChallengeCard: View {
             if appearance.showsBranding {
                 HStack(spacing: 4) {
                     Image(systemName: "checkmark.shield.fill")
-                        .foregroundColor(Color(uiColor: appearance.accentColor))
+                        .foregroundColor(Color(appearance.accentColor))
                     Text(strings.brandName)
                         .font(appearance.font(.footnote, size: 13, weight: .semibold))
-                        .foregroundColor(Color(uiColor: appearance.secondaryTextColor))
+                        .foregroundColor(Color(appearance.secondaryTextColor))
                 }
                 .accessibilityElement(children: .combine)
             }
@@ -186,6 +187,18 @@ struct NativeChallengeCard: View {
     }
 }
 
+private extension View {
+    /// Tints controls, using `accentColor` on iOS 14, which has no `tint`.
+    @ViewBuilder
+    func accent(_ color: Color) -> some View {
+        if #available(iOS 15.0, *) {
+            tint(color)
+        } else {
+            accentColor(color)
+        }
+    }
+}
+
 struct FooterButton: View {
     let systemImage: String
     let label: String
@@ -196,7 +209,7 @@ struct FooterButton: View {
         Button(action: action) {
             Image(systemName: systemImage)
                 .font(.system(size: 17, weight: .medium))
-                .foregroundColor(Color(uiColor: appearance.secondaryTextColor))
+                .foregroundColor(Color(appearance.secondaryTextColor))
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
@@ -218,7 +231,7 @@ struct PrimaryButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: min(appearance.cornerRadius, 12), style: .continuous)
-                    .fill(Color(uiColor: appearance.accentColor))
+                    .fill(Color(appearance.accentColor))
             )
             .opacity(isEnabled ? (configuration.isPressed ? 0.8 : 1) : 0.45)
     }

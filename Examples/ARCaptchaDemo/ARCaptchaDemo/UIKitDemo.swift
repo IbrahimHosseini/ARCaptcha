@@ -27,11 +27,14 @@ final class UIKitDemoViewController: UIViewController {
             self?.show(token.map { "Checkbox token: \($0.value)" } ?? "No token")
         }
 
-        var buttonConfiguration = UIButton.Configuration.filled()
-        buttonConfiguration.title = "Verify from UIKit"
-        let button = UIButton(configuration: buttonConfiguration, primaryAction: UIAction { [weak self] _ in
+        let button = UIButton(type: .system, primaryAction: UIAction(title: "Verify from UIKit") { [weak self] _ in
             self?.verify()
         })
+        if #available(iOS 15.0, *) {
+            var buttonConfiguration = UIButton.Configuration.filled()
+            buttonConfiguration.title = "Verify from UIKit"
+            button.configuration = buttonConfiguration
+        }
 
         tokenLabel.numberOfLines = 0
         tokenLabel.font = .monospacedSystemFont(ofSize: 12, weight: .regular)

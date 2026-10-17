@@ -70,13 +70,13 @@ struct PuzzleSlider: View {
             let travel = max(proxy.size.width - thumbWidth, 1)
             ZStack(alignment: .leading) {
                 Capsule()
-                    .fill(Color(uiColor: appearance.fieldBackgroundColor))
+                    .fill(Color(appearance.fieldBackgroundColor))
                     .frame(height: 22)
                 Capsule()
-                    .fill(Color(uiColor: appearance.accentColor).opacity(0.3))
+                    .fill(Color(appearance.accentColor).opacity(0.3))
                     .frame(width: thumbWidth / 2 + fraction * travel, height: 22)
                 RoundedRectangle(cornerRadius: min(appearance.cornerRadius, 14), style: .continuous)
-                    .fill(Color(uiColor: appearance.accentColor))
+                    .fill(Color(appearance.accentColor))
                     .frame(width: thumbWidth, height: height)
                     .overlay(
                         Image(systemName: "arrow.right")

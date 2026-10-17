@@ -118,16 +118,16 @@ struct CheckboxBody: View {
                     box
                     Text(controller.state == .verified ? strings.checkboxVerified : strings.checkboxTitle)
                         .font(appearance.font(.body, size: 16, weight: .semibold))
-                        .foregroundColor(Color(uiColor: appearance.primaryTextColor))
+                        .foregroundColor(Color(appearance.primaryTextColor))
                     Spacer(minLength: 8)
                     if appearance.showsBranding {
                         VStack(spacing: 2) {
                             Image(systemName: "checkmark.shield.fill")
                                 .font(.system(size: 20))
-                                .foregroundColor(Color(uiColor: appearance.accentColor))
+                                .foregroundColor(Color(appearance.accentColor))
                             Text(strings.brandName)
                                 .font(appearance.font(.caption2, size: 11, weight: .medium))
-                                .foregroundColor(Color(uiColor: appearance.secondaryTextColor))
+                                .foregroundColor(Color(appearance.secondaryTextColor))
                         }
                         .accessibilityHidden(true)
                     }
@@ -136,11 +136,11 @@ struct CheckboxBody: View {
                 .frame(minHeight: 64)
                 .background(
                     RoundedRectangle(cornerRadius: appearance.cornerRadius, style: .continuous)
-                        .fill(Color(uiColor: appearance.backgroundColor))
+                        .fill(Color(appearance.backgroundColor))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: appearance.cornerRadius, style: .continuous)
-                        .stroke(Color(uiColor: appearance.secondaryTextColor).opacity(0.35), lineWidth: 1)
+                        .stroke(Color(appearance.secondaryTextColor).opacity(0.35), lineWidth: 1)
                 )
                 .contentShape(Rectangle())
             }
@@ -154,7 +154,7 @@ struct CheckboxBody: View {
             if controller.state == .failed {
                 Text(strings.checkboxFailed)
                     .font(appearance.font(.footnote, size: 13))
-                    .foregroundColor(Color(uiColor: appearance.errorColor))
+                    .foregroundColor(Color(appearance.errorColor))
             }
         }
         .environment(\.layoutDirection, controller.configuration.language.isRightToLeft ? .rightToLeft : .leftToRight)
@@ -165,9 +165,9 @@ struct CheckboxBody: View {
     private var box: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(controller.state == .verified ? Color(uiColor: appearance.successColor) : Color(uiColor: appearance.fieldBackgroundColor))
+                .fill(controller.state == .verified ? Color(appearance.successColor) : Color(appearance.fieldBackgroundColor))
             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .stroke(Color(uiColor: controller.state == .failed ? appearance.errorColor : appearance.secondaryTextColor), lineWidth: 1.5)
+                .stroke(Color(controller.state == .failed ? appearance.errorColor : appearance.secondaryTextColor), lineWidth: 1.5)
                 .opacity(controller.state == .verified ? 0 : 1)
             switch controller.state {
             case .verifying:

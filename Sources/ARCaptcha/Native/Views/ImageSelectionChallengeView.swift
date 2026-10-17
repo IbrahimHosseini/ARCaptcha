@@ -37,16 +37,9 @@ struct ImageSelectionChallengeView: View {
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(Color(uiColor: appearance.accentColor), lineWidth: isSelected ? 3 : 0)
+                    .stroke(Color(appearance.accentColor), lineWidth: isSelected ? 3 : 0)
             )
-            .overlay(alignment: .topTrailing) {
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(.white, Color(uiColor: appearance.accentColor))
-                        .padding(4)
-                }
-            }
+            .overlay(checkmark(isSelected), alignment: .topTrailing)
             .scaleEffect(isSelected ? 0.92 : 1)
             .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isSelected)
             .contentShape(Rectangle())
@@ -55,5 +48,18 @@ struct ImageSelectionChallengeView: View {
             .accessibilityLabel(String(format: model.strings.imageAccessibilityLabel, index + 1, images.count))
             .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
             .accessibilityAction { model.toggleImage(index) }
+    }
+
+    /// A white check on an accent circle. The white disc behind the symbol fills its cut-out check,
+    /// which looks like the palette rendering iOS 14 does not have.
+    @ViewBuilder
+    private func checkmark(_ isSelected: Bool) -> some View {
+        if isSelected {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundColor(Color(appearance.accentColor))
+                .background(Circle().fill(Color.white).padding(2))
+                .padding(4)
+        }
     }
 }

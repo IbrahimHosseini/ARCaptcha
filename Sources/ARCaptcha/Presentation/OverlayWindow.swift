@@ -57,12 +57,21 @@ final class OverlayViewController: UIViewController {
         spinner.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(spinner)
 
-        var buttonConfiguration = UIButton.Configuration.filled()
-        buttonConfiguration.image = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .bold))
-        buttonConfiguration.cornerStyle = .capsule
-        buttonConfiguration.baseBackgroundColor = appearance.backgroundColor
-        buttonConfiguration.baseForegroundColor = appearance.primaryTextColor
-        closeButton.configuration = buttonConfiguration
+        let closeImage = UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .bold))
+        if #available(iOS 15.0, *) {
+            var buttonConfiguration = UIButton.Configuration.filled()
+            buttonConfiguration.image = closeImage
+            buttonConfiguration.cornerStyle = .capsule
+            buttonConfiguration.baseBackgroundColor = appearance.backgroundColor
+            buttonConfiguration.baseForegroundColor = appearance.primaryTextColor
+            closeButton.configuration = buttonConfiguration
+        } else {
+            closeButton.setImage(closeImage, for: .normal)
+            closeButton.tintColor = appearance.primaryTextColor
+            closeButton.backgroundColor = appearance.backgroundColor
+            // Half of the 40-point size below, which makes it a circle.
+            closeButton.layer.cornerRadius = 20
+        }
         closeButton.accessibilityLabel = strings.close
         closeButton.alpha = 0
         closeButton.translatesAutoresizingMaskIntoConstraints = false

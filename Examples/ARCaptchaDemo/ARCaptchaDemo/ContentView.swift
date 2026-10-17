@@ -40,9 +40,15 @@ struct DemoSettings: DynamicProperty {
 @MainActor
 final class EventLog: ObservableObject {
     @Published private(set) var lines: [String] = []
+    private let timeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .medium
+        return formatter
+    }()
 
     func add(_ line: String) {
-        let time = Date().formatted(date: .omitted, time: .standard)
+        let time = timeFormatter.string(from: Date())
         lines.insert("\(time)  \(line)", at: 0)
     }
 
@@ -58,17 +64,17 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section("Site") {
+                Section(header: Text("Site")) {
                     TextField("Site key", text: settings.$siteKey)
-                        .textInputAutocapitalization(.never)
+                        .autocapitalization(.none)
                         .disableAutocorrection(true)
                     TextField("Domain, e.g. example.com", text: settings.$domain)
-                        .textInputAutocapitalization(.never)
+                        .autocapitalization(.none)
                         .disableAutocorrection(true)
                         .keyboardType(.URL)
                 }
 
-                Section("Options") {
+                Section(header: Text("Options")) {
                     Picker("Renderer", selection: settings.$renderer) {
                         Text("Web").tag(ARCaptchaConfiguration.Renderer.web)
                         Text("Native").tag(ARCaptchaConfiguration.Renderer.native)
@@ -101,31 +107,33 @@ struct ContentView: View {
                     Text("Invisible shows a challenge only when ARCaptcha asks for one.")
                 }
 
-                Section("Checkbox") {
+                Section(header: Text("Checkbox")) {
                     ARCaptchaCheckbox(configuration: settings.configuration, token: $checkboxToken, onEvent: logEvent) { error in
                         log.add("checkbox error \(error.code.rawValue): \(error.message)")
                     }
                     .id(settings.identity)
                     .listRowInsets(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
                     if let checkboxToken {
-                        Text(checkboxToken.value).font(.caption.monospaced()).textSelection(.enabled)
+                        Text(checkboxToken.value)
+                            .font(.system(.caption, design: .monospaced))
+                            .contextMenu {
+                                Button("Copy") { UIPasteboard.general.string = checkboxToken.value }
+                            }
                         Button("Use token (clears it)") { self.checkboxToken = nil }
                     }
                 }
 
-                Section("More") {
-                    NavigationLink("Inline native challenge") {
-                        InlineChallengeScreen(settings: settings, log: log)
-                    }
-                    NavigationLink("UIKit") {
-                        UIKitDemo(configuration: settings.configuration, log: log)
-                            .navigationTitle("UIKit")
-                    }
+                Section(header: Text("More")) {
+                    NavigationLink("Inline native challenge", destination: InlineChallengeScreen(settings: settings, log: log))
+                    NavigationLink(
+                        "UIKit",
+                        destination: UIKitDemo(configuration: settings.configuration, log: log).navigationTitle("UIKit")
+                    )
                 }
 
                 Section {
                     ForEach(log.lines.indices, id: \.self) { index in
-                        Text(log.lines[index]).font(.caption.monospaced())
+                        Text(log.lines[index]).font(.system(.caption, design: .monospaced))
                     }
                 } header: {
                     HStack {
@@ -182,13 +190,13 @@ struct InlineChallengeScreen: View {
                 .id(settings.identity)
                 if let token {
                     Label("Token: \(token.value)", systemImage: "checkmark.seal.fill")
-                        .font(.footnote.monospaced())
+                        .font(.system(.footnote, design: .monospaced))
                         .foregroundColor(.green)
                 }
             }
             .padding()
         }
-        .background(Color(uiColor: .systemGroupedBackground).ignoresSafeArea())
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("Inline challenge")
         .navigationBarTitleDisplayMode(.inline)
     }

@@ -11,7 +11,7 @@ Protect your iOS app's sign-up, login and OTP screens with [ARCaptcha](https://a
 
 ## Requirements
 
-- iOS 15 or later
+- iOS 14 or later
 - Xcode 16 or later (Swift 6)
 - A site key from the [ARCaptcha dashboard](https://dashboard.arcaptcha.co) and a domain registered for it
 

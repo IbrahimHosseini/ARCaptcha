@@ -122,7 +122,7 @@ struct NativeAPIClient: Sendable {
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await session.data(from: url)
+            (data, response) = try await session.compatibleData(for: URLRequest(url: url))
         } catch {
             throw ARCaptchaError(code: .createNetworkError, message: error.localizedDescription)
         }
@@ -140,7 +140,7 @@ struct NativeAPIClient: Sendable {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.httpBody = try JSONEncoder().encode(body)
         do {
-            let (data, response) = try await session.data(for: request)
+            let (data, response) = try await session.compatibleData(for: request)
             guard let http = response as? HTTPURLResponse else {
                 throw ARCaptchaError(code: networkError, message: "The response was not HTTP.")
             }
@@ -155,5 +155,53 @@ struct NativeAPIClient: Sendable {
     private static func serverMessage(_ data: Data, status: Int) -> String {
         let message = (try? JSONDecoder().decode(APIErrorResponse.self, from: data))?.message
         return "\(status)-\(message ?? HTTPURLResponse.localizedString(forStatusCode: status))"
+    }
+}
+
+extension URLSession {
+    /// `data(for:)` that also runs on iOS 14, which has no async URLSession API.
+    func compatibleData(for request: URLRequest) async throws -> (Data, URLResponse) {
+        if #available(iOS 15.0, *) {
+            return try await data(for: request)
+        }
+        let handle = DataTaskHandle()
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                let task = dataTask(with: request) { data, response, error in
+                    if let data, let response {
+                        continuation.resume(returning: (data, response))
+                    } else {
+                        continuation.resume(throwing: error ?? URLError(.badServerResponse))
+                    }
+                }
+                handle.start(task)
+            }
+        } onCancel: {
+            handle.cancel()
+        }
+    }
+}
+
+/// Lets a Swift task cancel the data task it is waiting on, even if cancellation comes first.
+private final class DataTaskHandle: @unchecked Sendable {
+    private let lock = NSLock()
+    private var task: URLSessionDataTask?
+    private var isCancelled = false
+
+    func start(_ task: URLSessionDataTask) {
+        lock.lock()
+        self.task = task
+        let cancelled = isCancelled
+        lock.unlock()
+        task.resume()
+        if cancelled { task.cancel() }
+    }
+
+    func cancel() {
+        lock.lock()
+        isCancelled = true
+        let task = self.task
+        lock.unlock()
+        task?.cancel()
     }
 }

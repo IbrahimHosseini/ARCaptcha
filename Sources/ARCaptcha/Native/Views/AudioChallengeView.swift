@@ -4,7 +4,7 @@ import SwiftUI
 struct AudioChallengeView: View {
     @ObservedObject var model: NativeChallengeModel
     let isPlaying: Bool
-    @FocusState private var isFieldFocused: Bool
+    @State private var isFieldFocused = false
 
     private var appearance: ARCaptchaAppearance { model.configuration.appearance }
 
@@ -16,35 +16,49 @@ struct AudioChallengeView: View {
                         .font(.system(size: 20, weight: .bold))
                         .foregroundColor(.white)
                         .frame(width: 52, height: 52)
-                        .background(Circle().fill(Color(uiColor: appearance.accentColor)))
+                        .background(Circle().fill(Color(appearance.accentColor)))
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(isPlaying ? model.strings.stopAudio : model.strings.playAudio)
 
-                TextField(model.strings.audioPlaceholder, text: $model.audioAnswer)
-                    .font(appearance.font(.body, size: 17))
-                    .foregroundColor(Color(uiColor: appearance.primaryTextColor))
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .submitLabel(.done)
-                    .focused($isFieldFocused)
-                    .onSubmit(model.submitAudioAnswer)
-                    .padding(.horizontal, 14)
-                    .frame(minHeight: 52)
-                    .background(
-                        RoundedRectangle(cornerRadius: min(appearance.cornerRadius, 12), style: .continuous)
-                            .fill(Color(uiColor: appearance.fieldBackgroundColor))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: min(appearance.cornerRadius, 12), style: .continuous)
-                            .stroke(Color(uiColor: appearance.accentColor), lineWidth: isFieldFocused ? 1.5 : 0)
-                    )
+                TextField(
+                    model.strings.audioPlaceholder,
+                    text: $model.audioAnswer,
+                    onEditingChanged: { isFieldFocused = $0 },
+                    onCommit: model.submitAudioAnswer
+                )
+                .font(appearance.font(.body, size: 17))
+                .foregroundColor(Color(appearance.primaryTextColor))
+                .answerKeyboard()
+                .disableAutocorrection(true)
+                .padding(.horizontal, 14)
+                .frame(minHeight: 52)
+                .background(
+                    RoundedRectangle(cornerRadius: min(appearance.cornerRadius, 12), style: .continuous)
+                        .fill(Color(appearance.fieldBackgroundColor))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: min(appearance.cornerRadius, 12), style: .continuous)
+                        .stroke(Color(appearance.accentColor), lineWidth: isFieldFocused ? 1.5 : 0)
+                )
             }
             .frame(maxWidth: 340)
 
             Button(model.strings.confirm, action: model.submitAudioAnswer)
                 .buttonStyle(PrimaryButtonStyle(appearance: appearance))
                 .disabled(model.audioAnswer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        }
+    }
+}
+
+private extension View {
+    /// No capitalization and a Done key. iOS 14 has no `submitLabel`, so it keeps the Return key there.
+    @ViewBuilder
+    func answerKeyboard() -> some View {
+        if #available(iOS 15.0, *) {
+            textInputAutocapitalization(.never).submitLabel(.done)
+        } else {
+            autocapitalization(.none)
         }
     }
 }
