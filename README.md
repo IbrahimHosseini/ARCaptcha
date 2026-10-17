@@ -2,8 +2,6 @@
 
 Protect your iOS app's sign-up, login and OTP screens with [ARCaptcha](https://arcaptcha.co).
 
-[فارسی](README.fa.md)
-
 - **Two renderers**: ARCaptcha's official web widget in a `WKWebView`, or fully native SwiftUI challenges (image selection, slide puzzle, audio).
 - **Three ways to show it**: a modal challenge, an invisible check that shows a challenge only when needed, or a challenge embedded in your layout.
 - **SwiftUI and UIKit**, async/await and completion handlers.
@@ -205,8 +203,8 @@ Use dynamic colors, such as `.label` or `UIColor.dynamic(light:dark:)`, to give 
 ### Texts
 
 ```swift
-var strings = ARCaptchaStrings.persian
-strings.checkboxTitle = "تأیید کنید که انسان هستید"
+var strings = ARCaptchaStrings.english
+strings.checkboxTitle = "Confirm you're human"
 configuration.strings = strings
 ```
 
