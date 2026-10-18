@@ -29,6 +29,10 @@ struct AudioChallengeView: View {
                 )
                 .font(appearance.font(.body, size: 17))
                 .foregroundColor(Color(appearance.primaryTextColor))
+                // The field ignores the card's right-to-left direction and lays out by the app's language,
+                // so it is pinned left-to-right and aligned to the side the challenge language reads from.
+                .multilineTextAlignment(model.configuration.language.isRightToLeft ? .trailing : .leading)
+                .environment(\.layoutDirection, .leftToRight)
                 .answerKeyboard()
                 .disableAutocorrection(true)
                 .padding(.horizontal, 14)
