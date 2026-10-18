@@ -143,7 +143,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("ARCaptcha \(ARCaptcha.sdkVersion)")
+            .navigationTitle("ARCaptcha")
         }
         .navigationViewStyle(.stack)
     }
