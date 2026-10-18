@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2
+
+- The audio challenge switches the audio session off the main thread, so it no longer risks hangs or triggers Xcode's hang-risk warnings.
+
 ## 1.0.1
 
 - The audio challenge's answer field now aligns right in Persian and left in English.
