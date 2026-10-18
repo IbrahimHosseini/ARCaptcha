@@ -17,14 +17,14 @@ Protect your iOS app's sign-up, login and OTP screens with [ARCaptcha](https://a
 
 ## Installation
 
-Add the package with Swift Package Manager. In Xcode choose **File › Add Package Dependencies…** and enter the repository URL, or add it to `Package.swift`:
+Add the package with Swift Package Manager. In Xcode choose **File › Add Package Dependencies…** and enter `https://p-source.780.ir/ios/arcaptcha.git`, or add it to `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/arcaptcha/arcaptcha-ios-sdk", from: "1.0.0"),
+    .package(url: "https://p-source.780.ir/ios/arcaptcha.git", from: "1.0.0"),
 ],
 targets: [
-    .target(name: "YourApp", dependencies: [.product(name: "ARCaptcha", package: "arcaptcha-ios-sdk")]),
+    .target(name: "YourApp", dependencies: [.product(name: "ARCaptcha", package: "arcaptcha")]),
 ]
 ```
 
