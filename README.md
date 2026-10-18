@@ -143,6 +143,16 @@ stackView.addArrangedSubview(challenge.view)
 challenge.didMove(toParent: self)
 ```
 
+The help button shows a system alert. To show the help in your app's own alert, pass `onHelp`:
+
+```swift
+ARCaptchaChallengeView(configuration: configuration, onHelp: { help in
+    showAlert(title: help.title, message: help.message, button: help.dismissTitle)
+}) { token in
+    self.token = token
+}
+```
+
 ## Configuration
 
 ```swift

@@ -76,6 +76,8 @@ final class NativeChallengeModel: ObservableObject {
     /// Called each time a challenge is ready for the user.
     var onChallengeReady: (() -> Void)?
     var onSolved: ((ARCaptchaToken) -> Void)?
+    /// Called when the user taps help. When `nil`, the card shows the help in a system alert.
+    var onHelp: ((ARCaptchaHelp) -> Void)?
     /// Called on errors when the model is not embedded. Embedded models show a retry button instead.
     var onFailure: ((ARCaptchaError) -> Void)?
 

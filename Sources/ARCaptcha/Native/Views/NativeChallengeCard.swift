@@ -158,7 +158,11 @@ struct NativeChallengeCard: View {
             }
             Spacer(minLength: 0)
             FooterButton(systemImage: "questionmark.circle", label: strings.help, appearance: appearance) {
-                showsHelp = true
+                if let onHelp = model.onHelp {
+                    onHelp(ARCaptchaHelp(title: strings.help, message: helpText, dismissTitle: strings.ok))
+                } else {
+                    showsHelp = true
+                }
             }
             if model.allowsAudio {
                 FooterButton(
