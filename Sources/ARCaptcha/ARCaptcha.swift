@@ -13,7 +13,7 @@ import UIKit
 @MainActor
 public final class ARCaptcha {
     /// The version of this SDK.
-    public nonisolated static let sdkVersion = "1.0.0"
+    public nonisolated static let sdkVersion = "1.0.1"
 
     public let configuration: ARCaptchaConfiguration
     /// Receives lifecycle events of every verification run by this instance.

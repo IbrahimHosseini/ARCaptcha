@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- The audio challenge's answer field now aligns right in Persian and left in English.
+
 ## 1.0.0
 
 First release.
